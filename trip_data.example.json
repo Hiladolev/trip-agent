@@ -20,11 +20,21 @@
       "check_out": "2026-09-XX"
     }
   ],
+  "booked_activities": [
+    {
+      "name": "example activity name",
+      "city": "example city",
+      "date": "2026-09-XX",
+      "time": "HH:MM",
+      "description": "optional details, e.g. tickets already purchased"
+    }
+  ],
   "budget": {
     "total_ils": 0,
     "spent_so_far_ils": 0
   },
   "exchange_rates": {},
   "todo_list": [],
+  "recommendations": [],
   "logged_expenses": []
 }
