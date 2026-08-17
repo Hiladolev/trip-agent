@@ -69,11 +69,16 @@ ADD_RECOMMENDATION_TOOL = {
         "properties": {
             "place_name": {"type": "string"},
             "city": {"type": "string", "description": "One of: Tokyo, Kyoto, Osaka, Koh Samui, Koh Phangan"},
+            "priority": {
+                "type": "string",
+                "enum": ["must", "recommended", "nice_to_have"],
+                "description": "How strongly this is recommended - ask the user if not stated",
+            },
             "description": {"type": "string"},
             "maps_link": {"type": "string"},
             "source": {"type": "string"},
         },
-        "required": ["place_name", "city", "description"],
+        "required": ["place_name", "city", "priority", "description"],
     },
 }
 
@@ -178,6 +183,7 @@ def execute_tool(name: str, tool_input: dict) -> tuple[str, bool]:
             "id": str(uuid.uuid4()),
             "place_name": tool_input["place_name"],
             "city": tool_input["city"],
+            "priority": tool_input["priority"],
             "description": tool_input["description"],
             "maps_link": tool_input.get("maps_link"),
             "source": tool_input.get("source"),
