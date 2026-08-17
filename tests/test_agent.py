@@ -151,3 +151,28 @@ def test_build_system_prompt_includes_today_and_trip_data(trip_data_file):
     assert date.today().isoformat() in prompt
     assert "CURRENT trip_data.json" in prompt
     assert "TOOLS FOR UPDATING TRIP DATA" in prompt
+    assert "Days remaining in the trip" in prompt
+
+
+def test_days_remaining_before_trip_starts_counts_full_length_inclusive(trip_data_file):
+    data = agent.load_trip_data()
+    data["trip_start_date"] = "2026-09-03"
+    data["trip_end_date"] = "2026-10-05"
+    # today (whenever the test runs) is well before 2026-09-03
+
+    assert agent.compute_days_remaining(data) == 33
+
+
+def test_days_remaining_during_trip_counts_from_today_inclusive(trip_data_file, monkeypatch):
+    class FixedDate(date):
+        @classmethod
+        def today(cls):
+            return date(2026, 9, 20)
+
+    monkeypatch.setattr(agent, "date", FixedDate)
+    data = agent.load_trip_data()
+    data["trip_start_date"] = "2026-09-03"
+    data["trip_end_date"] = "2026-10-05"
+
+    # Oct 5 - Sep 20 = 15 days, +1 for inclusive of today = 16
+    assert agent.compute_days_remaining(data) == 16

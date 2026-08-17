@@ -128,13 +128,24 @@ def save_history(history: list) -> None:
         json.dump(history, f, ensure_ascii=False, indent=2)
 
 
+def compute_days_remaining(trip_data: dict) -> int:
+    today = date.today()
+    trip_start = date.fromisoformat(trip_data["trip_start_date"])
+    trip_end = date.fromisoformat(trip_data["trip_end_date"])
+    reference = trip_start if today < trip_start else today
+    return (trip_end - reference).days + 1
+
+
 def build_system_prompt(trip_data: dict) -> str:
     base_prompt = SYSTEM_PROMPT_PATH.read_text(encoding="utf-8")
     trip_data_json = json.dumps(trip_data, ensure_ascii=False, indent=2)
     today = date.today().isoformat()
+    days_remaining = compute_days_remaining(trip_data)
     return (
         f"{base_prompt}\n\n"
-        f"Today's date is: {today}\n\n"
+        f"Today's date is: {today}\n"
+        f"Days remaining in the trip: {days_remaining} (use this exact number - "
+        f"do not recalculate it yourself from trip_start_date/trip_end_date)\n\n"
         f"CURRENT trip_data.json:\n{trip_data_json}"
     )
 
@@ -218,8 +229,9 @@ def get_reply(user_message: str) -> str:
     ]
     api_messages.append({"role": "user", "content": user_message})
 
+    container_id = None
     while True:
-        response = client.messages.create(
+        create_kwargs = dict(
             model=MODEL,
             max_tokens=MAX_TOKENS,
             system=system_prompt,
@@ -228,6 +240,11 @@ def get_reply(user_message: str) -> str:
             thinking={"type": "adaptive"},
             output_config={"effort": "high"},
         )
+        if container_id:
+            create_kwargs["container"] = container_id
+        response = client.messages.create(**create_kwargs)
+        if response.container:
+            container_id = response.container.id
         api_messages.append({"role": "assistant", "content": response.content})
 
         if response.stop_reason == "pause_turn":
