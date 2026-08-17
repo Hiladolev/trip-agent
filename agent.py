@@ -226,7 +226,7 @@ def get_reply(user_message: str) -> str:
             messages=api_messages,
             tools=TOOLS,
             thinking={"type": "adaptive"},
-            output_config={"effort": "medium"},
+            output_config={"effort": "high"},
         )
         api_messages.append({"role": "assistant", "content": response.content})
 
