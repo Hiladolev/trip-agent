@@ -24,6 +24,7 @@
     "total_ils": 0,
     "spent_so_far_ils": 0
   },
+  "exchange_rates": {},
   "todo_list": [],
   "logged_expenses": []
 }
