@@ -1,0 +1,7 @@
+trip_data.json
+conversation_history.json
+.env
+__pycache__/
+*.pyc
+venv/
+.venv/

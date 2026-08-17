@@ -1,0 +1,29 @@
+{
+  "trip_composition": "honeymoon - a couple, adult-oriented recommendations only",
+  "destinations": ["Japan", "Thailand"],
+  "trip_start_date": "2026-09-XX",
+  "trip_end_date": "2026-10-XX",
+  "flights": [
+    {
+      "description": "Outbound - fill in real details",
+      "from": "Tel Aviv",
+      "to": "Tokyo",
+      "departure": "2026-09-XX HH:MM",
+      "arrival": "2026-09-XX HH:MM"
+    }
+  ],
+  "hotels": [
+    {
+      "name": "example hotel name",
+      "city": "example city",
+      "check_in": "2026-09-XX",
+      "check_out": "2026-09-XX"
+    }
+  ],
+  "budget": {
+    "total_ils": 0,
+    "spent_so_far_ils": 0
+  },
+  "todo_list": [],
+  "logged_expenses": []
+}
