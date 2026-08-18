@@ -39,3 +39,11 @@ def test_history_returns_saved_messages(history_file):
 
     assert response.status_code == 200
     assert response.json() == saved
+
+
+def test_root_serves_index_html():
+    response = client.get("/")
+
+    assert response.status_code == 200
+    assert "text/html" in response.headers["content-type"]
+    assert "Trip Agent" in response.text

@@ -4,14 +4,19 @@ Minimal slice - no auth yet. Serves the chat frontend from static/ and
 exposes /chat, /history, and /export/excel.
 """
 
+from pathlib import Path
+
 from fastapi import FastAPI
 from fastapi.responses import StreamingResponse
+from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
 
 from agent import get_reply, load_history, load_trip_data
 from export import build_excel
 
 app = FastAPI(title="Trip Agent")
+
+STATIC_DIR = Path(__file__).parent / "static"
 
 
 class ChatRequest(BaseModel):
@@ -42,3 +47,6 @@ def export_excel() -> StreamingResponse:
         media_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
         headers={"Content-Disposition": "attachment; filename=trip_export.xlsx"},
     )
+
+
+app.mount("/", StaticFiles(directory=STATIC_DIR, html=True), name="static")
