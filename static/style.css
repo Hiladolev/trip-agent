@@ -6,6 +6,7 @@
   --error-bg: #fee2e2;
   --error-text: #991b1b;
   --border: #e2e8f0;
+  --danger: #dc2626;
 }
 
 * {
@@ -167,11 +168,11 @@ body {
   text-decoration: underline;
 }
 
-.preview-page .app-header {
+.wide-page .app-header {
   max-width: 900px;
 }
 
-.preview-content {
+.page-content {
   width: 100%;
   max-width: 900px;
   padding: 1rem;
@@ -180,11 +181,11 @@ body {
   min-height: 0;
 }
 
-.preview-content section {
+.page-content section {
   margin-bottom: 2rem;
 }
 
-.preview-content h2 {
+.page-content h2 {
   font-size: 1.05rem;
   margin: 0 0 0.5rem;
 }
@@ -208,4 +209,75 @@ body {
 
 .data-table a {
   color: var(--accent);
+}
+
+.todo-form {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.todo-form input[type="text"] {
+  flex: 1;
+  min-width: 150px;
+  padding: 0.5rem 0.75rem;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  font-size: 0.9rem;
+}
+
+.todo-form input[type="date"] {
+  padding: 0.5rem 0.75rem;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  font-size: 0.9rem;
+}
+
+.todo-form button {
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: 8px;
+  background: var(--accent);
+  color: var(--accent-text);
+  font-size: 0.9rem;
+  cursor: pointer;
+}
+
+.todo-form button:hover {
+  opacity: 0.9;
+}
+
+.done {
+  text-decoration: line-through;
+  color: #888;
+}
+
+.btn-complete,
+.btn-delete {
+  font-size: 0.8rem;
+  padding: 0.3rem 0.6rem;
+  border-radius: 6px;
+  cursor: pointer;
+  margin-right: 0.4rem;
+  background: transparent;
+}
+
+.btn-complete {
+  border: 1px solid var(--accent);
+  color: var(--accent);
+}
+
+.btn-complete:hover {
+  background: var(--accent);
+  color: var(--accent-text);
+}
+
+.btn-delete {
+  border: 1px solid var(--danger);
+  color: var(--danger);
+}
+
+.btn-delete:hover {
+  background: var(--danger);
+  color: #ffffff;
 }
