@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Trip Data Preview</title>
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body class="preview-page">
+  <header class="app-header">
+    <h1>Trip Agent</h1>
+    <nav class="header-nav">
+      <a class="nav-link" href="/">Back to Chat</a>
+      <a id="export-link" href="/export/excel">Export to Excel</a>
+    </nav>
+  </header>
+
+  <main class="preview-content">
+    <section>
+      <h2>Recommendations</h2>
+      <table class="data-table" id="recommendations-table">
+        <thead>
+          <tr>
+            <th>City</th>
+            <th>Place Name</th>
+            <th>Priority</th>
+            <th>Description</th>
+            <th>Maps Link</th>
+            <th>Source</th>
+          </tr>
+        </thead>
+        <tbody id="recommendations-body"></tbody>
+      </table>
+    </section>
+
+    <section>
+      <h2>Trip Skeleton</h2>
+      <table class="data-table" id="skeleton-table">
+        <thead>
+          <tr>
+            <th>Date</th>
+            <th>Type</th>
+            <th>Location/Route</th>
+            <th>Details</th>
+          </tr>
+        </thead>
+        <tbody id="skeleton-body"></tbody>
+      </table>
+    </section>
+  </main>
+
+  <script src="/preview.js"></script>
+</body>
+</html>

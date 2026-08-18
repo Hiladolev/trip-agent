@@ -56,6 +56,14 @@ def test_root_serves_index_html():
     assert "Trip Agent" in response.text
 
 
+def test_preview_page_serves_preview_html():
+    response = client.get("/preview")
+
+    assert response.status_code == 200
+    assert "text/html" in response.headers["content-type"]
+    assert "Trip Data Preview" in response.text
+
+
 def test_preview_data_returns_recommendations_and_skeleton(trip_data_file):
     trip_data_file.write_text(json.dumps({
         "recommendations": [

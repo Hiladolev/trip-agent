@@ -7,7 +7,7 @@ exposes /chat, /history, and /export/excel.
 from pathlib import Path
 
 from fastapi import FastAPI
-from fastapi.responses import StreamingResponse
+from fastapi.responses import FileResponse, StreamingResponse
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
 
@@ -45,6 +45,11 @@ def preview_data() -> dict:
         "recommendations": trip_data.get("recommendations", []),
         "skeleton": build_skeleton_rows(trip_data),
     }
+
+
+@app.get("/preview")
+def preview_page() -> FileResponse:
+    return FileResponse(STATIC_DIR / "preview.html")
 
 
 @app.get("/export/excel")
