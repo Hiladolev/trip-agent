@@ -20,6 +20,30 @@ def _date_only(date_str: str) -> str:
 ASSUMED_HOTEL_CHECKIN_TIME = "15:00"
 
 
+def build_skeleton_rows(trip_data: dict) -> list[dict]:
+    """Chronologically merged hotel/flight rows, shared by build_excel and
+    the /preview/data endpoint."""
+    rows = []
+    for hotel in trip_data.get("hotels", []):
+        sort_key = f"{hotel['check_in']} {ASSUMED_HOTEL_CHECKIN_TIME}"
+        rows.append((sort_key, {
+            "date": _date_only(hotel["check_in"]),
+            "type": "Hotel",
+            "location_route": hotel["city"],
+            "details": f"{hotel['name']}: check-in {hotel['check_in']} -> check-out {hotel['check_out']}",
+        }))
+    for flight in trip_data.get("flights", []):
+        sort_key = flight["departure"]  # already "YYYY-MM-DD HH:MM"
+        rows.append((sort_key, {
+            "date": _date_only(flight["departure"]),
+            "type": "Flight",
+            "location_route": f"{flight['from']} -> {flight['to']}",
+            "details": f"{flight['description']}: depart {flight['departure']} -> arrive {flight['arrival']}",
+        }))
+    rows.sort(key=lambda item: item[0])
+    return [row for _, row in rows]
+
+
 def build_excel(trip_data: dict) -> BytesIO:
     wb = Workbook()
 
@@ -40,30 +64,8 @@ def build_excel(trip_data: dict) -> BytesIO:
 
     skeleton_sheet = wb.create_sheet("Trip Skeleton")
     skeleton_sheet.append(["Date", "Type", "Location/Route", "Details"])
-
-    rows = []
-    for hotel in trip_data.get("hotels", []):
-        sort_key = f"{hotel['check_in']} {ASSUMED_HOTEL_CHECKIN_TIME}"
-        rows.append((
-            sort_key,
-            _date_only(hotel["check_in"]),
-            "Hotel",
-            hotel["city"],
-            f"{hotel['name']}: check-in {hotel['check_in']} -> check-out {hotel['check_out']}",
-        ))
-    for flight in trip_data.get("flights", []):
-        sort_key = flight["departure"]  # already "YYYY-MM-DD HH:MM"
-        rows.append((
-            sort_key,
-            _date_only(flight["departure"]),
-            "Flight",
-            f"{flight['from']} -> {flight['to']}",
-            f"{flight['description']}: depart {flight['departure']} -> arrive {flight['arrival']}",
-        ))
-
-    rows.sort(key=lambda row: row[0])
-    for row in rows:
-        skeleton_sheet.append(list(row[1:]))
+    for row in build_skeleton_rows(trip_data):
+        skeleton_sheet.append([row["date"], row["type"], row["location_route"], row["details"]])
 
     output = BytesIO()
     wb.save(output)
