@@ -1,17 +1,18 @@
 """FastAPI app exposing the trip-planning chat agent.
 
-Minimal slice - no auth yet. Serves the chat frontend from static/ and
-exposes /chat, /history, and /export/excel.
+Minimal slice - no auth yet. Serves the chat, preview, and to-do frontend
+pages from static/, and exposes /chat, /history, /preview*, /todos*, and
+/export/excel.
 """
 
 from pathlib import Path
 
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException
 from fastapi.responses import FileResponse, StreamingResponse
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
 
-from agent import get_reply, load_history, load_trip_data
+from agent import delete_todo_item, execute_tool, get_reply, load_history, load_trip_data
 from export import build_excel, build_skeleton_rows
 
 app = FastAPI(title="Trip Agent")
@@ -27,6 +28,11 @@ class ChatResponse(BaseModel):
     reply: str
 
 
+class AddTodoRequest(BaseModel):
+    task: str
+    deadline: str | None = None
+
+
 @app.post("/chat", response_model=ChatResponse)
 def chat(request: ChatRequest) -> ChatResponse:
     reply = get_reply(request.message)
@@ -36,6 +42,32 @@ def chat(request: ChatRequest) -> ChatResponse:
 @app.get("/history")
 def history() -> list[dict]:
     return load_history()
+
+
+@app.get("/todos/data")
+def todos_data() -> list[dict]:
+    return load_trip_data().get("todo_list", [])
+
+
+@app.post("/todos/data")
+def add_todo(request: AddTodoRequest) -> list[dict]:
+    execute_tool("add_todo_item", {"task": request.task, "deadline": request.deadline})
+    return load_trip_data().get("todo_list", [])
+
+
+@app.post("/todos/data/{item_id}/complete")
+def complete_todo(item_id: str) -> list[dict]:
+    _, is_error = execute_tool("complete_todo_item", {"id": item_id})
+    if is_error:
+        raise HTTPException(status_code=404, detail=f"No todo item found with id {item_id}.")
+    return load_trip_data().get("todo_list", [])
+
+
+@app.delete("/todos/data/{item_id}")
+def delete_todo(item_id: str) -> list[dict]:
+    if not delete_todo_item(item_id):
+        raise HTTPException(status_code=404, detail=f"No todo item found with id {item_id}.")
+    return load_trip_data().get("todo_list", [])
 
 
 @app.get("/preview/data")

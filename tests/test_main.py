@@ -100,3 +100,69 @@ def test_preview_data_returns_recommendations_and_skeleton(trip_data_file):
             "details": "Gracery Shinjuku: check-in 2026-09-04 -> check-out 2026-09-11",
         },
     ]
+
+
+def test_get_todos_returns_todo_list(trip_data_file):
+    trip_data_file.write_text(json.dumps({
+        "todo_list": [
+            {"id": "abc-1", "task": "Book ferry", "deadline": "2026-08-25", "completed": False},
+        ],
+    }), encoding="utf-8")
+
+    response = client.get("/todos/data")
+
+    assert response.status_code == 200
+    assert response.json() == [
+        {"id": "abc-1", "task": "Book ferry", "deadline": "2026-08-25", "completed": False},
+    ]
+
+
+def test_post_todos_adds_new_item(trip_data_file):
+    trip_data_file.write_text(json.dumps({"todo_list": []}), encoding="utf-8")
+
+    response = client.post("/todos/data", json={"task": "Exchange currency", "deadline": None})
+
+    assert response.status_code == 200
+    todos = response.json()
+    assert len(todos) == 1
+    assert todos[0]["task"] == "Exchange currency"
+    assert todos[0]["completed"] is False
+    assert "id" in todos[0]
+
+
+def test_complete_todos_marks_item_completed(trip_data_file):
+    trip_data_file.write_text(json.dumps({
+        "todo_list": [{"id": "abc-1", "task": "Book ferry", "deadline": None, "completed": False}],
+    }), encoding="utf-8")
+
+    response = client.post("/todos/data/abc-1/complete")
+
+    assert response.status_code == 200
+    assert response.json()[0]["completed"] is True
+
+
+def test_complete_todos_unknown_id_returns_404(trip_data_file):
+    trip_data_file.write_text(json.dumps({"todo_list": []}), encoding="utf-8")
+
+    response = client.post("/todos/data/does-not-exist/complete")
+
+    assert response.status_code == 404
+
+
+def test_delete_todos_removes_item(trip_data_file):
+    trip_data_file.write_text(json.dumps({
+        "todo_list": [{"id": "abc-1", "task": "Book ferry", "deadline": None, "completed": False}],
+    }), encoding="utf-8")
+
+    response = client.delete("/todos/data/abc-1")
+
+    assert response.status_code == 200
+    assert response.json() == []
+
+
+def test_delete_todos_unknown_id_returns_404(trip_data_file):
+    trip_data_file.write_text(json.dumps({"todo_list": []}), encoding="utf-8")
+
+    response = client.delete("/todos/data/does-not-exist")
+
+    assert response.status_code == 404
