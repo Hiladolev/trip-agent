@@ -176,3 +176,19 @@ def test_days_remaining_during_trip_counts_from_today_inclusive(trip_data_file, 
 
     # Oct 5 - Sep 20 = 15 days, +1 for inclusive of today = 16
     assert agent.compute_days_remaining(data) == 16
+
+
+def test_delete_todo_item_removes_item(trip_data_file):
+    agent.execute_tool("add_todo_item", {"task": "book tickets"})
+    item_id = agent.load_trip_data()["todo_list"][0]["id"]
+
+    deleted = agent.delete_todo_item(item_id)
+
+    assert deleted is True
+    assert agent.load_trip_data()["todo_list"] == []
+
+
+def test_delete_todo_item_unknown_id_returns_false(trip_data_file):
+    deleted = agent.delete_todo_item("does-not-exist")
+
+    assert deleted is False

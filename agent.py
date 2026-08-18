@@ -218,6 +218,18 @@ def execute_tool(name: str, tool_input: dict) -> tuple[str, bool]:
     return f"Unknown tool: {name}", True
 
 
+def delete_todo_item(item_id: str) -> bool:
+    """Remove a to-do item by id. Page-only mutation (not in CUSTOM_TOOLS) -
+    Claude cannot call this from chat."""
+    trip_data = load_trip_data()
+    for i, item in enumerate(trip_data["todo_list"]):
+        if item["id"] == item_id:
+            del trip_data["todo_list"][i]
+            save_trip_data(trip_data)
+            return True
+    return False
+
+
 def get_reply(user_message: str) -> str:
     trip_data = load_trip_data()
     system_prompt = build_system_prompt(trip_data)
