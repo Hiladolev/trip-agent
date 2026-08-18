@@ -64,6 +64,14 @@ def test_preview_page_serves_preview_html():
     assert "Trip Data Preview" in response.text
 
 
+def test_todos_page_serves_todos_html():
+    response = client.get("/todos")
+
+    assert response.status_code == 200
+    assert "text/html" in response.headers["content-type"]
+    assert "Trip To-Do List" in response.text
+
+
 def test_preview_data_returns_recommendations_and_skeleton(trip_data_file):
     trip_data_file.write_text(json.dumps({
         "recommendations": [

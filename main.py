@@ -70,6 +70,11 @@ def delete_todo(item_id: str) -> list[dict]:
     return load_trip_data().get("todo_list", [])
 
 
+@app.get("/todos")
+def todos_page() -> FileResponse:
+    return FileResponse(STATIC_DIR / "todos.html")
+
+
 @app.get("/preview/data")
 def preview_data() -> dict:
     trip_data = load_trip_data()

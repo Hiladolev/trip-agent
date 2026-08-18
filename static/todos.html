@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Trip To-Do List</title>
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body class="wide-page">
+  <header class="app-header">
+    <h1>Trip Agent</h1>
+    <nav class="header-nav">
+      <a class="nav-link" href="/">Back to Chat</a>
+      <a class="nav-link" href="/preview">Preview Trip Data</a>
+      <a id="export-link" href="/export/excel">Export to Excel</a>
+    </nav>
+  </header>
+
+  <main class="page-content">
+    <section>
+      <h2>Add a To-Do</h2>
+      <form id="todo-form" class="todo-form">
+        <input id="todo-task" type="text" placeholder="Task" required>
+        <input id="todo-deadline" type="date">
+        <button type="submit">Add</button>
+      </form>
+    </section>
+
+    <section>
+      <h2>To-Do List</h2>
+      <table class="data-table" id="todos-table">
+        <thead>
+          <tr>
+            <th>Task</th>
+            <th>Deadline</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody id="todos-body"></tbody>
+      </table>
+    </section>
+  </main>
+
+  <script src="/todos.js"></script>
+</body>
+</html>
