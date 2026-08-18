@@ -21,6 +21,13 @@ def history_file(tmp_path, monkeypatch):
     return path
 
 
+@pytest.fixture
+def trip_data_file(tmp_path, monkeypatch):
+    path = tmp_path / "trip_data.json"
+    monkeypatch.setattr(agent, "TRIP_DATA_PATH", path)
+    return path
+
+
 def test_history_returns_empty_list_when_no_file(history_file):
     response = client.get("/history")
 
@@ -47,3 +54,41 @@ def test_root_serves_index_html():
     assert response.status_code == 200
     assert "text/html" in response.headers["content-type"]
     assert "Trip Agent" in response.text
+
+
+def test_preview_data_returns_recommendations_and_skeleton(trip_data_file):
+    trip_data_file.write_text(json.dumps({
+        "recommendations": [
+            {
+                "city": "Kyoto",
+                "place_name": "Fushimi Inari",
+                "priority": "must",
+                "description": "shrine",
+                "maps_link": "https://maps.example/x",
+                "source": "friend",
+            },
+        ],
+        "hotels": [
+            {
+                "name": "Gracery Shinjuku",
+                "city": "Tokyo",
+                "check_in": "2026-09-04",
+                "check_out": "2026-09-11",
+            },
+        ],
+        "flights": [],
+    }), encoding="utf-8")
+
+    response = client.get("/preview/data")
+
+    assert response.status_code == 200
+    data = response.json()
+    assert data["recommendations"][0]["place_name"] == "Fushimi Inari"
+    assert data["skeleton"] == [
+        {
+            "date": "2026-09-04",
+            "type": "Hotel",
+            "location_route": "Tokyo",
+            "details": "Gracery Shinjuku: check-in 2026-09-04 -> check-out 2026-09-11",
+        },
+    ]

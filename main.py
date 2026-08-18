@@ -12,7 +12,7 @@ from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
 
 from agent import get_reply, load_history, load_trip_data
-from export import build_excel
+from export import build_excel, build_skeleton_rows
 
 app = FastAPI(title="Trip Agent")
 
@@ -36,6 +36,15 @@ def chat(request: ChatRequest) -> ChatResponse:
 @app.get("/history")
 def history() -> list[dict]:
     return load_history()
+
+
+@app.get("/preview/data")
+def preview_data() -> dict:
+    trip_data = load_trip_data()
+    return {
+        "recommendations": trip_data.get("recommendations", []),
+        "skeleton": build_skeleton_rows(trip_data),
+    }
 
 
 @app.get("/export/excel")
